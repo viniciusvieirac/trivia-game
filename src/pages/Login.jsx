@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import getToken from '../services/api';
+import { addEmail, addName } from '../redux/action';
 
 class Login extends Component {
   state = {
     name: '',
     email: '',
-    token: '',
     disabledButton: true,
   };
 
@@ -36,13 +36,15 @@ class Login extends Component {
 
   handleClick = (event) => {
     event.preventDefault();
-    const { history } = this.props;
+    const { name, email } = this.state;
+    const { history, dispatch } = this.props;
     getToken()
-    .then((data) => {
+      .then((data) => {
         localStorage.setItem('token', data.token);
-        history.push('/game')
+        history.push('/game');
       });
-
+    dispatch(addName(name));
+    dispatch(addEmail(email));
   };
 
   render() {
@@ -67,7 +69,7 @@ class Login extends Component {
           data-testid="btn-play"
           type="button"
           disabled={ disabledButton }
-          onClick={this.handleClick}
+          onClick={ this.handleClick }
         >
           Play
 
