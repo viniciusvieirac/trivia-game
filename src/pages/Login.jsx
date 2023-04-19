@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import getToken from '../services/api';
 
 class Login extends Component {
   state = {
     name: '',
     email: '',
+    token: '',
     disabledButton: true,
   };
 
@@ -30,6 +34,17 @@ class Login extends Component {
     }
   };
 
+  handleClick = (event) => {
+    event.preventDefault();
+    const { history } = this.props;
+    getToken()
+    .then((data) => {
+        localStorage.setItem('token', data.token);
+        history.push('/game')
+      });
+
+  };
+
   render() {
     const { name, email, disabledButton } = this.state;
     return (
@@ -52,6 +67,7 @@ class Login extends Component {
           data-testid="btn-play"
           type="button"
           disabled={ disabledButton }
+          onClick={this.handleClick}
         >
           Play
 
@@ -69,4 +85,11 @@ class Login extends Component {
   }
 }
 
-export default Login;
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default connect()(Login);
