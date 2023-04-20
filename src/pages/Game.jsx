@@ -12,6 +12,7 @@ class Game extends React.Component {
   state = {
     answerSelected: null,
     buttonDisabled: false,
+    index: 0,
   };
 
   async componentDidMount() {
@@ -67,8 +68,17 @@ class Game extends React.Component {
 
   disabledButton = () => { this.setState(() => ({ buttonDisabled: true })); };
 
+  nextQuestion = () => {
+    const { index } = this.state;
+    this.setState({
+      index: index + 1,
+      answerSelected: null,
+    });
+  };
+
   render() {
     const { allQuestions } = this.props;
+    const { answerSelected, index } = this.state;
     return (
       <div>
         <Header />
@@ -80,16 +90,27 @@ class Game extends React.Component {
               <>
                 <Timer disabledButton={ this.disabledButton } />
                 <section>
-                  <p data-testid="question-category">{ allQuestions[0].category }</p>
-                  <p data-testid="question-text">{ allQuestions[0].question }</p>
+                  <p data-testid="question-category">{ allQuestions[index].category }</p>
+                  <p data-testid="question-text">{ allQuestions[index].question }</p>
                   <div data-testid="answer-options">
                     {
-                      this.renderQuestion(allQuestions[0])
+                      this.renderQuestion(allQuestions[index])
                     }
                   </div>
                 </section>
               </>
             )
+        }
+        {
+          answerSelected && (
+            <button
+              data-testid="btn-next"
+              onClick={ () => this.nextQuestion() }
+            >
+              Next
+
+            </button>
+          )
         }
       </div>
     );
