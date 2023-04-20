@@ -5,14 +5,43 @@ import { saveQuestions } from '../redux/actions/saveQuestions';
 import Header from '../components/Header';
 
 const ZERO_PONTO_CINCO = 0.5;
+const MIL = 1000;
 
 class Game extends React.Component {
+  state = {
+    timeRemaining: 30,
+    timerId: null,
+  };
+
   async componentDidMount() {
     const tokenFromLocalStorage = localStorage.getItem('token');
     const response = await fetch(`https://opentdb.com/api.php?amount=5&token=${tokenFromLocalStorage}`);
     const data = await response.json();
     this.verifyToken(data);
+    this.startTimer();
   }
+
+  componentWillUnmount() {
+    this.clearTimer();
+  }
+
+  startTimer = () => {
+    const timerId = setInterval(() => {
+      const { timeRemaining } = this.state;
+      if (timeRemaining > 0) {
+        this.setState({ timeRemaining: timeRemaining - 1 });
+      } else {
+        this.clearTimer();
+      }
+    }, MIL);
+    this.setState({ timerId });
+  };
+
+  clearTimer = () => {
+    const { timerId } = this.state;
+    clearInterval(timerId);
+    this.setState({ timerId: null });
+  };
 
   verifyToken = ({ response_code: responseCode, results }) => {
     if (responseCode) {
@@ -25,6 +54,7 @@ class Game extends React.Component {
   };
 
   renderQuestion = ({ incorrect_answers: incorrect, correct_answer: correct }) => {
+    const { timeRemaining } = this.state;
     const allAnswers = [...incorrect, correct]
       .sort(() => Math.random() - ZERO_PONTO_CINCO);
 
@@ -33,6 +63,7 @@ class Game extends React.Component {
         <button
           key={ index }
           data-testid={ correct === answer ? 'correct-answer' : `wrong-answer-${index}` }
+          disabled={ !timeRemaining }
         >
           { answer }
         </button>
@@ -42,10 +73,16 @@ class Game extends React.Component {
 
   render() {
     const { allQuestions } = this.props;
+    const { timeRemaining } = this.state;
     return (
       <div>
         <Header />
         <h1>Game</h1>
+        <p>
+          Tempo restante:
+          {' '}
+          {timeRemaining}
+        </p>
         {
           !allQuestions.length
             ? <span>Carregando...</span>
