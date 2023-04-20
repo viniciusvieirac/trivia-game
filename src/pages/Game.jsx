@@ -5,8 +5,11 @@ import { saveQuestions } from '../redux/actions/saveQuestions';
 import Header from '../components/Header';
 import '../App.css';
 import Timer from '../components/Timer';
+import { updateScore } from '../redux/actions/updateScore';
 
 const ZERO_PONTO_CINCO = 0.5;
+const TRES = 3;
+const DEZ = 10;
 
 class Game extends React.Component {
   state = {
@@ -22,8 +25,24 @@ class Game extends React.Component {
     this.verifyToken(data);
   }
 
-  handleClass = () => {
-    this.setState({ answerSelected: true });
+  rightAnswer = (difficulty) => {
+    const { time, playerScore, dispatch } = this.props;
+    let dificuldade = 1;
+    if (difficulty === 'hard') {
+      dificuldade = TRES;
+    } else if (difficulty === 'medium') {
+      dificuldade = 2;
+    }
+    const questionScore = DEZ + (time * dificuldade);
+    const newScore = playerScore + questionScore;
+    dispatch(updateScore(newScore));
+    this.chooseAnswer();
+  };
+
+  chooseAnswer = () => { this.setState({ answerSelected: true }); };
+
+  wrongAnswer = () => {
+    this.chooseAnswer();
   };
 
   verifyToken = ({ response_code: responseCode, results }) => {
@@ -36,7 +55,11 @@ class Game extends React.Component {
     dispatch(saveQuestions(results));
   };
 
-  renderQuestion = ({ incorrect_answers: incorrect, correct_answer: correct }) => {
+  renderQuestion = (questions) => {
+    const { incorrect_answers: incorrect,
+      correct_answer: correct,
+      difficulty,
+    } = questions;
     const { buttonDisabled } = this.state;
     const allAnswers = [...incorrect, correct]
       .sort(() => Math.random() - ZERO_PONTO_CINCO);
@@ -57,7 +80,9 @@ class Game extends React.Component {
             }
             disabled={ buttonDisabled }
             className={ className }
-            onClick={ this.handleClass }
+            onClick={
+              correct === answer ? () => this.rightAnswer(difficulty) : this.wrongAnswer
+            }
           >
             { answer }
           </button>
@@ -117,8 +142,10 @@ class Game extends React.Component {
   }
 }
 
-const mapStateToProps = ({ questionsSaved }) => ({
+const mapStateToProps = ({ questionsSaved, timer, player }) => ({
   allQuestions: questionsSaved.allQuestions,
+  time: timer.time,
+  playerScore: player.score,
 });
 
 Game.propTypes = {
@@ -130,6 +157,8 @@ Game.propTypes = {
     category: PropTypes.string,
     question: PropTypes.string,
   })).isRequired,
+  time: PropTypes.number.isRequired,
+  playerScore: PropTypes.number.isRequired,
 };
 
 export default connect(mapStateToProps)(Game);
