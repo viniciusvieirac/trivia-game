@@ -6,6 +6,16 @@ import Header from '../components/Header';
 const MAGIC_NUMBER = 140;
 
 class Feedback extends Component {
+  handleClick = () => {
+    const { history } = this.props;
+    history.push('/');
+  };
+
+  rankingPage = () => {
+    const { history } = this.props;
+    history.push('/ranking');
+  };
+
   render() {
     const { score, assertions } = this.props;
     return (
@@ -20,6 +30,20 @@ class Feedback extends Component {
           <p data-testid="feedback-total-score">{score}</p>
           <p data-testid="feedback-total-question">{assertions}</p>
         </div>
+        <button
+          data-testid="btn-play-again"
+          onClick={ this.handleClick }
+        >
+          Play Again
+
+        </button>
+        <button
+          data-testid="btn-ranking"
+          onClick={ this.rankingPage }
+        >
+          Ranking
+
+        </button>
       </div>
     );
   }
@@ -35,6 +59,9 @@ const mapStateToProps = ({ player }) => ({
 Feedback.propTypes = {
   score: PropTypes.number.isRequired,
   assertions: PropTypes.number.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default connect(mapStateToProps)(Feedback);
