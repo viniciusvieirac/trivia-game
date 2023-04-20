@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { saveQuestions } from '../redux/actions/saveQuestions';
+import Header from '../components/Header';
 
 const ZERO_PONTO_CINCO = 0.5;
 
@@ -43,6 +44,8 @@ class Game extends React.Component {
     const { allQuestions } = this.props;
     return (
       <div>
+        <Header />
+        <h1>Game</h1>
         {
           !allQuestions.length
             ? <span>Carregando...</span>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import getToken from '../services/api';
+import { addEmail, addName } from '../redux/action';
 
 class Login extends Component {
   state = {
@@ -35,12 +36,15 @@ class Login extends Component {
 
   handleClick = (event) => {
     event.preventDefault();
-    const { history } = this.props;
+    const { name, email } = this.state;
+    const { history, dispatch } = this.props;
     getToken()
       .then((data) => {
         localStorage.setItem('token', data.token);
         history.push('/game');
       });
+    dispatch(addName(name));
+    dispatch(addEmail(email));
   };
 
   render() {
@@ -87,6 +91,7 @@ Login.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 export default connect()(Login);
