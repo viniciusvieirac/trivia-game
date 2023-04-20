@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { saveQuestions } from '../redux/actions/saveQuestions';
 import Header from '../components/Header';
+import '../App.css';
 
 const ZERO_PONTO_CINCO = 0.5;
 const MIL = 1000;
@@ -11,6 +12,7 @@ class Game extends React.Component {
   state = {
     timeRemaining: 30,
     timerId: null,
+    answerSelected: null,
   };
 
   async componentDidMount() {
@@ -24,6 +26,10 @@ class Game extends React.Component {
   componentWillUnmount() {
     this.clearTimer();
   }
+
+  handleClass = () => {
+    this.setState({ answerSelected: true });
+  };
 
   startTimer = () => {
     const timerId = setInterval(() => {
@@ -57,17 +63,29 @@ class Game extends React.Component {
     const { timeRemaining } = this.state;
     const allAnswers = [...incorrect, correct]
       .sort(() => Math.random() - ZERO_PONTO_CINCO);
-
+    const { answerSelected } = this.state;
     return (
-      allAnswers.map((answer, index) => (
-        <button
-          key={ index }
-          data-testid={ correct === answer ? 'correct-answer' : `wrong-answer-${index}` }
-          disabled={ !timeRemaining }
-        >
-          { answer }
-        </button>
-      ))
+      allAnswers.map((answer, index) => {
+        const isAnswerSelected = answerSelected;
+        const isCorrectAnswer = correct === answer;
+        let className = '';
+        if (isAnswerSelected) {
+          className = isCorrectAnswer ? 'green' : 'red';
+        }
+        return (
+          <button
+            key={ index }
+            data-testid={
+              correct === answer ? 'correct-answer' : `wrong-answer-${index}`
+            }
+            disabled={ !timeRemaining }
+            className={ className }
+            onClick={ this.handleClass }
+          >
+            { answer }
+          </button>
+        );
+      })
     );
   };
 
