@@ -6,6 +6,11 @@ import Header from '../components/Header';
 const MAGIC_NUMBER = 140;
 
 class Feedback extends Component {
+  handleClick = () => {
+    const { history } = this.props;
+    history.push('/');
+  };
+
   render() {
     const { score } = this.props;
     return (
@@ -14,6 +19,14 @@ class Feedback extends Component {
         {score <= MAGIC_NUMBER ? (
           <p data-testid="feedback-text">Could be better...</p>)
           : (<p data-testid="feedback-text">Well Done!</p>)}
+
+        <button
+          data-testid="btn-play-again"
+          onClick={ this.handleClick }
+        >
+          Play Again
+
+        </button>
       </div>
     );
   }
@@ -26,8 +39,10 @@ const mapStateToProps = (state) => ({
 });
 
 Feedback.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   score: PropTypes.string.isRequired,
-
 };
 
 export default connect(mapStateToProps)(Feedback);
