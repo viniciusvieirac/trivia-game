@@ -17,14 +17,19 @@ class Feedback extends Component {
   };
 
   render() {
-    const { score } = this.props;
+    const { score, assertions } = this.props;
     return (
       <div>
         <Header />
-        {score <= MAGIC_NUMBER ? (
-          <p data-testid="feedback-text">Could be better...</p>)
-          : (<p data-testid="feedback-text">Well Done!</p>)}
-
+        {
+          score <= MAGIC_NUMBER
+            ? <p data-testid="feedback-text">Could be better...</p>
+            : <p data-testid="feedback-text">Well Done!</p>
+        }
+        <div className="feedback-container">
+          <p data-testid="feedback-total-score">{score}</p>
+          <p data-testid="feedback-total-question">{assertions}</p>
+        </div>
         <button
           data-testid="btn-play-again"
           onClick={ this.handleClick }
@@ -44,17 +49,19 @@ class Feedback extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  name: state.player.name,
-  email: state.player.gravatarEmail,
-  score: state.player.score,
+const mapStateToProps = ({ player }) => ({
+  name: player.name,
+  email: player.gravatarEmail,
+  score: player.score,
+  assertions: player.assertions,
 });
 
 Feedback.propTypes = {
+  score: PropTypes.number.isRequired,
+  assertions: PropTypes.number.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  score: PropTypes.string.isRequired,
 };
 
 export default connect(mapStateToProps)(Feedback);
