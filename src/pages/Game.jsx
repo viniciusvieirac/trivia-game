@@ -13,6 +13,7 @@ class Game extends React.Component {
     timeRemaining: 30,
     timerId: null,
     answerSelected: null,
+    index: 0,
   };
 
   async componentDidMount() {
@@ -89,9 +90,17 @@ class Game extends React.Component {
     );
   };
 
+  nextQuestion = () => {
+    const { index } = this.state;
+    this.setState({
+      index: index + 1,
+      answerSelected: null,
+    });
+  };
+
   render() {
     const { allQuestions } = this.props;
-    const { timeRemaining } = this.state;
+    const { timeRemaining, answerSelected, index } = this.state;
     return (
       <div>
         <Header />
@@ -106,15 +115,26 @@ class Game extends React.Component {
             ? <span>Carregando...</span>
             : (
               <section>
-                <p data-testid="question-category">{ allQuestions[0].category }</p>
-                <p data-testid="question-text">{ allQuestions[0].question }</p>
+                <p data-testid="question-category">{ allQuestions[index].category }</p>
+                <p data-testid="question-text">{ allQuestions[index].question }</p>
                 <div data-testid="answer-options">
                   {
-                    this.renderQuestion(allQuestions[0])
+                    this.renderQuestion(allQuestions[index])
                   }
                 </div>
               </section>
             )
+        }
+        {
+          answerSelected && (
+            <button
+              data-testid="btn-next"
+              onClick={ () => this.nextQuestion() }
+            >
+              Next
+
+            </button>
+          )
         }
       </div>
     );
