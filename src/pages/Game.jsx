@@ -94,7 +94,12 @@ class Game extends React.Component {
   disabledButton = () => { this.setState(() => ({ buttonDisabled: true })); };
 
   nextQuestion = () => {
+    const FOUR = 4;
+    const { history } = this.props;
     const { index } = this.state;
+    if (index === FOUR) {
+      return history.push('/feedback');
+    }
     this.setState({
       index: index + 1,
       answerSelected: null,
