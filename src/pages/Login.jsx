@@ -8,7 +8,6 @@ class Login extends Component {
   state = {
     name: '',
     email: '',
-    token: '',
     disabledButton: true,
   };
 
@@ -38,11 +37,10 @@ class Login extends Component {
     event.preventDefault();
     const { history } = this.props;
     getToken()
-    .then((data) => {
+      .then((data) => {
         localStorage.setItem('token', data.token);
-        history.push('/game')
+        history.push('/game');
       });
-
   };
 
   render() {
@@ -67,7 +65,7 @@ class Login extends Component {
           data-testid="btn-play"
           type="button"
           disabled={ disabledButton }
-          onClick={this.handleClick}
+          onClick={ this.handleClick }
         >
           Play
 
@@ -86,7 +84,6 @@ class Login extends Component {
 }
 
 Login.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
