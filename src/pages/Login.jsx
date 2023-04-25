@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import getToken from '../services/api';
 import { addEmail, addName } from '../redux/action';
+import { resetScore } from '../redux/actions/resetScore';
 
 class Login extends Component {
   state = {
@@ -11,6 +12,15 @@ class Login extends Component {
     email: '',
     disabledButton: true,
   };
+
+  componentDidMount() {
+    const rankingUsers = JSON.parse(localStorage.getItem('rankingTrivia'));
+    if (!rankingUsers) {
+      localStorage.setItem('rankingTrivia', JSON.stringify([]));
+    }
+    const { dispatch } = this.props;
+    dispatch(resetScore());
+  }
 
   handleChange = ({ target }) => {
     const { name, value } = target;

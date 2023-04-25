@@ -1,5 +1,6 @@
 import { ADD_NAME, ADD_EMAIL } from '../action';
 import { UPDATE_SCORE } from '../actions/updateScore';
+import { RESET_SCORE } from '../actions/resetScore';
 
 const INITIAL_STATE = {
   name: '',
@@ -25,6 +26,12 @@ const player = (state = INITIAL_STATE, action) => {
       ...state,
       score: action.payload,
       assertions: state.assertions + 1,
+    };
+  case RESET_SCORE:
+    return {
+      ...state,
+      score: 0,
+      assertions: 0,
     };
   default:
     return state;
