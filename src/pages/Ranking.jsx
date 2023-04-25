@@ -31,6 +31,7 @@ class Ranking extends Component {
         <ul>
           {
             ranking
+              .sort((p1, p2) => p2.playerScore - p1.playerScore)
               .map(({ playerName, playerScore, playerEmail }, ind) => {
                 const hashGerada = md5(playerEmail).toString();
                 return (

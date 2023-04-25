@@ -10,17 +10,24 @@ class Timer extends Component {
     this.startTimer();
   }
 
+  componentWillUnmount() {
+    const { timerId } = this.state;
+    clearInterval(timerId);
+  }
+
   startTimer = () => {
-    const { disabledButton } = this.props;
-    const intervaleTimer = setInterval(() => {
+    const { disabledButton, buttonDisabler } = this.props;
+    const timerId = setInterval(() => {
       const { time, dispatch } = this.props;
       if (time > 0) {
         dispatch(changeTimer(time - 1));
       } else {
+        buttonDisabler();
         disabledButton();
-        clearInterval(intervaleTimer);
+        clearInterval(timerId);
       }
     }, MIL);
+    this.setState((prevState) => ({ ...prevState, timerId }));
   };
 
   render() {
@@ -38,6 +45,7 @@ Timer.propTypes = {
   disabledButton: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   time: PropTypes.number.isRequired,
+  buttonDisabler: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps)(Timer);

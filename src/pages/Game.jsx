@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { saveQuestions } from '../redux/actions/saveQuestions';
 import Header from '../components/Header';
 import '../App.css';
 import Timer from '../components/Timer';
 import { updateScore } from '../redux/actions/updateScore';
+import { resetTimer } from '../redux/actions/changeTimer';
 
 const ZERO_PONTO_CINCO = 0.5;
 const TRES = 3;
@@ -16,6 +16,8 @@ class Game extends React.Component {
     answerSelected: null,
     buttonDisabled: false,
     index: 0,
+    allQuestions: [],
+    allAnswers: [],
   };
 
   async componentDidMount() {
@@ -36,13 +38,50 @@ class Game extends React.Component {
     const questionScore = DEZ + (time * dificuldade);
     const newScore = playerScore + questionScore;
     dispatch(updateScore(newScore));
-    this.chooseAnswer();
   };
 
-  chooseAnswer = () => { this.setState({ answerSelected: true }); };
+  chooseAnswer = (difficulty, answer, correct) => {
+    if (answer === correct) {
+      this.rightAnswer(difficulty);
+    }
+    this.buttonDisabler();
+    const { allAnswers, index } = this.state;
+    const colorizeBtns = allAnswers[index].map((btn) => {
+      const { props } = btn;
+      if (props.children === correct) {
+        return {
+          ...btn,
+          props: {
+            ...props,
+            className: 'green',
+          },
+        };
+      }
+      return {
+        ...btn,
+        props: {
+          ...props,
+          className: 'red',
+        },
+      };
+    });
+    allAnswers.splice(index, 1, colorizeBtns);
+  };
 
-  wrongAnswer = () => {
-    this.chooseAnswer();
+  buttonDisabler = () => {
+    const { allAnswers, index } = this.state;
+    const disabledButtons = allAnswers[index].map((btn) => {
+      const { props } = btn;
+      return {
+        ...btn,
+        props: {
+          ...props,
+          disabled: true,
+        },
+      };
+    });
+    allAnswers.splice(index, 1, disabledButtons);
+    this.setState({ answerSelected: true });
   };
 
   verifyToken = ({ response_code: responseCode, results }) => {
@@ -51,8 +90,8 @@ class Game extends React.Component {
       localStorage.removeItem('token');
       history.push('/');
     }
-    const { dispatch } = this.props;
-    dispatch(saveQuestions(results));
+    this.setState((prevState) => ({ ...prevState, allQuestions: results }));
+    this.renderQuestion(results);
   };
 
   saveOnRanking = () => {
@@ -65,16 +104,16 @@ class Game extends React.Component {
   };
 
   renderQuestion = (questions) => {
-    const { incorrect_answers: incorrect,
-      correct_answer: correct,
-      difficulty,
-    } = questions;
-    const { buttonDisabled } = this.state;
-    const allAnswers = [...incorrect, correct]
-      .sort(() => Math.random() - ZERO_PONTO_CINCO);
     const { answerSelected } = this.state;
-    return (
-      allAnswers.map((answer, index) => {
+    const allBtns = questions.reduce((acc, question) => {
+      const {
+        incorrect_answers: incorrect,
+        correct_answer: correct,
+        difficulty,
+      } = question;
+      const allAnswers = [...incorrect, correct]
+        .sort(() => Math.random() - ZERO_PONTO_CINCO);
+      const btnsAnswer = allAnswers.map((answer, index) => {
         const isAnswerSelected = answerSelected;
         const isCorrectAnswer = correct === answer;
         let className = '';
@@ -87,29 +126,30 @@ class Game extends React.Component {
             data-testid={
               correct === answer ? 'correct-answer' : `wrong-answer-${index}`
             }
-            disabled={ buttonDisabled }
+            disabled={ answerSelected }
             className={ className }
-            onClick={
-              correct === answer ? () => this.rightAnswer(difficulty) : this.wrongAnswer
-            }
+            onClick={ () => { this.chooseAnswer(difficulty, answer, correct); } }
           >
             { answer }
           </button>
         );
-      })
-    );
+      });
+      return [...acc, btnsAnswer];
+    }, []);
+    this.setState((prevState) => ({ ...prevState, allAnswers: allBtns }));
   };
 
   disabledButton = () => { this.setState(() => ({ buttonDisabled: true })); };
 
   nextQuestion = () => {
     const FOUR = 4;
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     const { index } = this.state;
     if (index === FOUR) {
       this.saveOnRanking();
       return history.push('/feedback');
     }
+    dispatch(resetTimer());
     this.setState({
       index: index + 1,
       answerSelected: null,
@@ -117,7 +157,7 @@ class Game extends React.Component {
   };
 
   render() {
-    const { allQuestions } = this.props;
+    const { allQuestions, allAnswers } = this.state;
     const { answerSelected, index } = this.state;
     return (
       <div>
@@ -128,14 +168,19 @@ class Game extends React.Component {
             ? <span>Carregando...</span>
             : (
               <>
-                <Timer disabledButton={ this.disabledButton } />
+                {
+                  !answerSelected
+                    && <Timer
+                      disabledButton={ this.disabledButton }
+                      buttonDisabler={ this.buttonDisabler }
+                    />
+                }
+
                 <section>
                   <p data-testid="question-category">{ allQuestions[index].category }</p>
                   <p data-testid="question-text">{ allQuestions[index].question }</p>
                   <div data-testid="answer-options">
-                    {
-                      this.renderQuestion(allQuestions[index])
-                    }
+                    { allAnswers[index] }
                   </div>
                 </section>
               </>
@@ -157,8 +202,7 @@ class Game extends React.Component {
   }
 }
 
-const mapStateToProps = ({ questionsSaved, timer, player }) => ({
-  allQuestions: questionsSaved.allQuestions,
+const mapStateToProps = ({ timer, player }) => ({
   time: timer.time,
   playerScore: player.score,
   playerName: player.name,
@@ -170,10 +214,6 @@ Game.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   dispatch: PropTypes.func.isRequired,
-  allQuestions: PropTypes.arrayOf(PropTypes.shape({
-    category: PropTypes.string,
-    question: PropTypes.string,
-  })).isRequired,
   time: PropTypes.number.isRequired,
   playerScore: PropTypes.number.isRequired,
   playerName: PropTypes.string.isRequired,
