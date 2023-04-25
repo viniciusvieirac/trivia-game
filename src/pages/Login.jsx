@@ -12,6 +12,13 @@ class Login extends Component {
     disabledButton: true,
   };
 
+  componentDidMount() {
+    const rankingUsers = JSON.parse(localStorage.getItem('rankingTrivia'));
+    if (!rankingUsers) {
+      localStorage.setItem('rankingTrivia', JSON.stringify([]));
+    }
+  }
+
   handleChange = ({ target }) => {
     const { name, value } = target;
     this.setState({

@@ -55,6 +55,15 @@ class Game extends React.Component {
     dispatch(saveQuestions(results));
   };
 
+  saveOnRanking = () => {
+    const { playerName, playerEmail, playerScore } = this.props;
+    const rankingUsers = JSON.parse(localStorage.getItem('rankingTrivia'));
+    localStorage.setItem('rankingTrivia', JSON.stringify(
+      [...rankingUsers,
+        { playerName, playerEmail, playerScore }],
+    ));
+  };
+
   renderQuestion = (questions) => {
     const { incorrect_answers: incorrect,
       correct_answer: correct,
@@ -98,6 +107,7 @@ class Game extends React.Component {
     const { history } = this.props;
     const { index } = this.state;
     if (index === FOUR) {
+      this.saveOnRanking();
       return history.push('/feedback');
     }
     this.setState({
@@ -151,6 +161,8 @@ const mapStateToProps = ({ questionsSaved, timer, player }) => ({
   allQuestions: questionsSaved.allQuestions,
   time: timer.time,
   playerScore: player.score,
+  playerName: player.name,
+  playerEmail: player.gravatarEmail,
 });
 
 Game.propTypes = {
@@ -164,6 +176,8 @@ Game.propTypes = {
   })).isRequired,
   time: PropTypes.number.isRequired,
   playerScore: PropTypes.number.isRequired,
+  playerName: PropTypes.string.isRequired,
+  playerEmail: PropTypes.string.isRequired,
 };
 
 export default connect(mapStateToProps)(Game);
