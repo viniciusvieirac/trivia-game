@@ -85,13 +85,18 @@ class Game extends React.Component {
   };
 
   verifyToken = ({ response_code: responseCode, results }) => {
-    if (responseCode) {
-      const { history } = this.props;
-      localStorage.removeItem('token');
-      history.push('/');
+    try {
+      console.log(responseCode);
+      console.log(results);
+      this.setState((prevState) => ({ ...prevState, allQuestions: results }));
+      this.renderQuestion(results);
+    } catch (error) {
+      if (responseCode) {
+        const { history } = this.props;
+        history.push('/');
+        localStorage.removeItem('token');
+      }
     }
-    this.setState((prevState) => ({ ...prevState, allQuestions: results }));
-    this.renderQuestion(results);
   };
 
   saveOnRanking = () => {
