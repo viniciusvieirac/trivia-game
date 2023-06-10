@@ -9,7 +9,6 @@ This project is an interactive trivia game that allows users to test their knowl
 - Run the following commands:
 ```
 npm start
-
 ```
 
 ### Built with:
@@ -17,6 +16,10 @@ npm start
 - [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 ### Developed by:
 - [Vinicius Vieira](https://www.linkedin.com/in/viniciusvieirac/)
+- [Marcos Vinicius](https://github.com/MarcosVinicius-iwnl)
+- [Diogo Rodrigues](https://github.com/dio1rodrigues)
+- [Gabriel Matsuda](https://github.com/gabrielmatsuda17)
+- [Luanderson Alves](https://github.com/luandersonalvesdev)
 
 **In Portuguese** 🇧🇷 
 #  Jogo de Trivia
@@ -28,7 +31,6 @@ Este projeto é um jogo de trivia interativo que permite aos usuários testarem 
 - Execute os seguintes comandos:
 ```
 npm start
-
 ```
 
 ### Construído com:
@@ -36,3 +38,7 @@ npm start
 - [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 ### Desenvolvido por:
 - [Vinicius Vieira](https://www.linkedin.com/in/viniciusvieirac/)
+- [Marcos Vinicius](https://github.com/MarcosVinicius-iwnl)
+- [Diogo Rodrigues](https://github.com/dio1rodrigues)
+- [Gabriel Matsuda](https://github.com/gabrielmatsuda17)
+- [Luanderson Alves](https://github.com/luandersonalvesdev)
