@@ -21,6 +21,8 @@ npm start
 - [Gabriel Matsuda](https://github.com/gabrielmatsuda17)
 - [Luanderson Alves](https://github.com/luandersonalvesdev)
 
+### CSS in progress
+
 **In Portuguese** 🇧🇷 
 #  Jogo de Trivia
 
@@ -43,4 +45,4 @@ npm start
 - [Gabriel Matsuda](https://github.com/gabrielmatsuda17)
 - [Luanderson Alves](https://github.com/luandersonalvesdev)
 
-## CSS em andamento
+### CSS em andamento
