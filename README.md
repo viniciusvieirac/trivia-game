@@ -42,3 +42,5 @@ npm start
 - [Diogo Rodrigues](https://github.com/dio1rodrigues)
 - [Gabriel Matsuda](https://github.com/gabrielmatsuda17)
 - [Luanderson Alves](https://github.com/luandersonalvesdev)
+
+## CSS em andamento
